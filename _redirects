@@ -1,0 +1,233 @@
+
+import React, { useState } from 'react';
+import { Project, User, UserRole, SkillRequirement } from '../types';
+
+interface ProjectDetailProps {
+  project: Project;
+  user: User | null;
+  onDonation: (amount: number, isRecurring: boolean) => void;
+  onVolunteer: (skillId: string, pitch: string) => void;
+  onBack: () => void;
+}
+
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, user, onDonation, onVolunteer, onBack }) => {
+  const [donationAmount, setDonationAmount] = useState<number>(100000);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState<string>('');
+  const [volunteerPitch, setVolunteerPitch] = useState('');
+  const [showDonationForm, setShowDonationForm] = useState(false);
+  const [showVolunteerForm, setShowVolunteerForm] = useState(false);
+
+  const fundingPercentage = Math.min(100, Math.round((project.currentFunding / project.targetFunding) * 100));
+
+  // Helper to extract YouTube ID
+  const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const videoId = project.videoUrl ? getYoutubeId(project.videoUrl) : null;
+
+  return (
+    <div className="max-w-6xl mx-auto py-8 px-4 animate-in fade-in duration-500">
+      <button 
+        onClick={onBack}
+        className="flex items-center gap-3 text-slate-400 hover:text-emerald-600 font-black text-[10px] uppercase tracking-widest mb-10 transition-all active-tap"
+      >
+        <div className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
+        </div>
+        Back to Explore
+      </button>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        {/* Left Content: Media and Deep Details */}
+        <div className="lg:col-span-8 space-y-10">
+          
+          {/* Main Visual: Video or Image */}
+          <div className="rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 bg-white">
+            {videoId ? (
+              <div className="aspect-video w-full">
+                <iframe 
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ) : (
+              <img src={project.imageUrl} alt={project.title} className="w-full aspect-video object-cover" />
+            )}
+          </div>
+
+          <div className="bg-white p-10 md:p-14 rounded-[3rem] border border-slate-100 shadow-sm space-y-12">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase tracking-widest border border-emerald-100">
+                  {project.category}
+                </span>
+                <span className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em]">Verified Innovation</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter">{project.title}</h1>
+              <p className="text-xl text-slate-500 font-medium mb-12 leading-relaxed border-l-4 border-emerald-500 pl-8 italic">
+                "{project.tagline}"
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-4">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span> Problem Background
+                </h3>
+                <p className="text-slate-600 text-sm leading-loose font-medium">{project.description}</p>
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-blue-500 rounded-full"></span> Technical Solution
+                </h3>
+                <p className="text-slate-600 text-sm leading-loose font-medium">
+                  {project.technicalDetails || "Pendekatan teknis menggunakan integrasi sistem cerdas berorientasi pada efisiensi operasional dan skalabilitas infrastruktur lokal."}
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-10 border-t border-slate-50">
+               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Key Impact Metrics</h3>
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                    <p className="text-xl font-black text-emerald-600">85%</p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Efficiency</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                    <p className="text-xl font-black text-slate-900">2.4K</p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Beneficiaries</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                    <p className="text-xl font-black text-slate-900">12T</p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Carbon Offset</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                    <p className="text-xl font-black text-slate-900">A+</p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Feasibility</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Content: Support and Funding Hub */}
+        <div className="lg:col-span-4 space-y-8">
+          {/* Support Hub Card */}
+          <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full group-hover:bg-emerald-500/20 transition-all duration-700"></div>
+            
+            <div className="relative z-10">
+              <h3 className="text-xl font-black mb-8 flex items-center gap-2">Support Hub</h3>
+              
+              <div className="space-y-2 mb-10">
+                <div className="flex justify-between items-end">
+                  <span className="text-4xl font-black">Rp {project.currentFunding.toLocaleString('id-ID')}</span>
+                  <span className="text-emerald-500 font-black text-xs px-2 py-1 bg-white/5 rounded-lg">{fundingPercentage}%</span>
+                </div>
+                <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${fundingPercentage}%` }} />
+                </div>
+                <div className="flex justify-between text-[9px] font-black uppercase text-slate-500 tracking-widest">
+                  <span>Goal: Rp {project.targetFunding.toLocaleString('id-ID')}</span>
+                  <span>{project.donorsCount} Backers</span>
+                </div>
+              </div>
+
+              {!showDonationForm ? (
+                <button 
+                  onClick={() => setShowDonationForm(true)}
+                  className="w-full py-5 bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-500/20 active-tap uppercase tracking-widest text-xs"
+                >
+                  Back This Project
+                </button>
+              ) : (
+                <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <input 
+                    type="number"
+                    value={donationAmount}
+                    onChange={(e) => setDonationAmount(Number(e.target.value))}
+                    className="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-white outline-none font-bold"
+                  />
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="rec" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} className="w-4 h-4 rounded text-emerald-500" />
+                    <label htmlFor="rec" className="text-[10px] font-black uppercase text-slate-400">Monthly Support</label>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setShowDonationForm(false)} className="flex-1 text-xs font-black uppercase text-slate-400">Cancel</button>
+                    <button onClick={() => onDonation(donationAmount, isRecurring)} className="flex-[2] py-4 bg-emerald-600 rounded-xl font-black text-[10px] uppercase">Donate</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Volunteer Hub Card */}
+          <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+             <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">Technical Talent</h3>
+             <div className="space-y-4 mb-8">
+               {project.requirements.map(req => (
+                 <div key={req.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex justify-between items-center group/skill">
+                   <div>
+                     <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{req.name}</p>
+                     <p className="text-[8px] text-slate-400 font-bold uppercase">{req.totalSlots - req.filledSlots} Slots Open</p>
+                   </div>
+                   <div className="w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-[10px] font-black text-emerald-600 group-hover/skill:bg-emerald-600 group-hover/skill:text-white transition-all">
+                     {req.filledSlots}/{req.totalSlots}
+                   </div>
+                 </div>
+               ))}
+             </div>
+             <button 
+              onClick={() => { if(!user) alert("Please sign in!"); else setShowVolunteerForm(true); }}
+              className="w-full py-4 border-2 border-slate-900 text-slate-900 font-black rounded-2xl hover:bg-slate-900 hover:text-white transition-all active-tap uppercase tracking-widest text-[10px]"
+             >
+               Apply as Talent
+             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Volunteer Modal Overlay */}
+      {showVolunteerForm && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+           <div className="bg-white rounded-[2.5rem] w-full max-w-lg overflow-hidden">
+             <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+               <h3 className="text-xl font-black uppercase tracking-tight">Talent Application</h3>
+               <button onClick={() => setShowVolunteerForm(false)} className="opacity-50 hover:opacity-100"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg></button>
+             </div>
+             <div className="p-8 space-y-6">
+               <div>
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Select Expertise</label>
+                 <select value={selectedSkill} onChange={e => setSelectedSkill(e.target.value)} className="w-full p-4 bg-slate-50 rounded-xl border border-slate-100 outline-none font-bold">
+                   <option value="">Choose skill...</option>
+                   {project.requirements.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                 </select>
+               </div>
+               <div>
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Technical Pitch</label>
+                 <textarea value={volunteerPitch} onChange={e => setVolunteerPitch(e.target.value)} placeholder="Bagaimana keahlian Anda dapat membantu proyek ini?" className="w-full p-4 bg-slate-50 rounded-xl border border-slate-100 outline-none font-medium min-h-[120px]"></textarea>
+               </div>
+               <button 
+                onClick={() => { onVolunteer(selectedSkill, volunteerPitch); setShowVolunteerForm(false); }}
+                className="w-full py-5 bg-emerald-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-500/20 active-tap uppercase tracking-widest text-xs"
+               >
+                 Submit Application
+               </button>
+             </div>
+           </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProjectDetail;

@@ -1,0 +1,195 @@
+
+import { Project, ProjectCategory, ProjectStatus, User, UserRole, Announcement, InnovationChallenge, VerificationStatus } from './types';
+
+export const MOCK_USERS: User[] = [
+  {
+    id: 'u1',
+    name: 'Dr. Sarah Connor',
+    email: 'sarah@inovasibersama.id',
+    role: UserRole.INNOVATOR,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah',
+    bio: 'Pecinta robotika dan peneliti AI yang fokus pada teknologi berkelanjutan.',
+    isVerified: true,
+    kycStatus: VerificationStatus.VERIFIED
+  },
+  {
+    id: 'u2',
+    name: 'Ahmad Admin',
+    email: 'admin@inovasibersama.id',
+    role: UserRole.ADMIN,
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=admin',
+    isVerified: true,
+    kycStatus: VerificationStatus.VERIFIED
+  },
+  {
+    id: 'u3',
+    name: 'AutoParts Global',
+    email: 'contact@autoparts.com',
+    role: UserRole.COLLABORATOR,
+    avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=autoparts',
+    bio: 'Kolaborator Entitas: Memberikan bimbingan teknis dan integrasi komponen industri untuk inovator startup EV.',
+    isVerified: true,
+    kycStatus: VerificationStatus.VERIFIED
+  },
+  {
+    id: 'u4',
+    name: 'Budi Santoso',
+    email: 'budi@donor.com',
+    role: UserRole.DONOR,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=budi',
+    bio: 'Filantropis yang fokus pada dukungan pendanaan inovasi ramah lingkungan dan teknologi tepat guna.',
+    isVerified: true,
+    kycStatus: VerificationStatus.VERIFIED
+  },
+  {
+    id: 'u5',
+    name: 'Siti Aminah',
+    email: 'siti@volunteer.com',
+    role: UserRole.VOLUNTEER,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=siti',
+    bio: 'Full-stack developer yang berdedikasi menyumbangkan keahlian teknis untuk membantu mewujudkan proyek inovasi sosial.',
+    skills: ['React', 'Node.js', 'UI Design'],
+    isVerified: true,
+    kycStatus: VerificationStatus.VERIFIED
+  }
+];
+
+export const MOCK_ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: 'n1',
+    title: 'Inovasi Bersama Summit 2025',
+    content: 'Bergabunglah dalam pertemuan inovator terbesar di Asia Tenggara. Daftar sekarang!',
+    imageUrl: 'https://images.unsplash.com/photo-1540575861501-7ad05823c95b?auto=format&fit=crop&w=1200&q=80',
+    link: '#',
+    active: true
+  },
+  {
+    id: 'n2',
+    title: 'Darurat Teknologi Air Bersih',
+    content: 'Sebuah desa di NTT membutuhkan filtrasi berkelanjutan. Dukung proyeknya hari ini.',
+    imageUrl: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1200&q=80',
+    link: '#',
+    active: true
+  }
+];
+
+export const MOCK_CHALLENGES: InnovationChallenge[] = [
+  {
+    id: 'c1',
+    companyName: 'AutoParts Global',
+    title: 'Industrial EV Component Integration',
+    description: 'Kami mencari inovator yang sedang mengembangkan sistem manajemen daya atau motor listrik. Kami menyediakan akses ke rantai pasok komponen otomotif kami.',
+    reward: 'Integrasi Rantai Pasok & Mentorship Industri',
+    skillsNeeded: ['Power Electronics', 'Supply Chain Management', 'Mechanical Design']
+  },
+  {
+    id: 'c2',
+    companyName: 'TechLab Research Institute',
+    title: 'Advanced Materials Testing Support',
+    description: 'Punya inovasi di bidang material berkelanjutan? Kami membuka laboratorium pengujian struktur kami untuk membantu validasi teknis prototipe Anda.',
+    reward: 'Akses Lab Gratis & Bimbingan Sertifikasi',
+    skillsNeeded: ['Materials Science', 'Structural Analysis', 'Quality Assurance']
+  }
+];
+
+export const MOCK_PROJECTS: Project[] = [
+  {
+    id: 'p1',
+    title: 'OceanPlastic Bot',
+    tagline: 'Robot otonom pembersih sampah plastik terumbu karang.',
+    description: 'Drone bawah air bertenaga AI yang dapat mengidentifikasi dan mengumpulkan sampah plastik dari terumbu karang tanpa merusak ekosistem.',
+    technicalDetails: 'Menggunakan NVIDIA Jetson untuk pemrosesan AI lokal dan sensor sonar resolusi tinggi.',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
+    innovatorId: 'u1',
+    category: ProjectCategory.ENVIRONMENT,
+    status: ProjectStatus.ACTIVE,
+    targetFunding: 150000000,
+    currentFunding: 45000000,
+    imageUrl: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?auto=format&fit=crop&w=800&q=80',
+    createdAt: new Date().toISOString(),
+    donorsCount: 88,
+    volunteersCount: 4,
+    requirements: [
+      { id: 's1', name: 'Computer Vision', totalSlots: 2, filledSlots: 1 },
+      { id: 's2', name: 'Hardware Engineering', totalSlots: 1, filledSlots: 0 }
+    ]
+  },
+  {
+    id: 'p2',
+    title: 'SolarGrid Connect',
+    tagline: 'Demokratisasi energi bersih untuk desa terpencil.',
+    description: 'Kit panel surya modular yang dirancang untuk perakitan mudah oleh komunitas lokal untuk pencahayaan berkelanjutan.',
+    videoUrl: 'https://www.youtube.com/watch?v=9No-FiEUpLA',
+    innovatorId: 'u3',
+    category: ProjectCategory.TECHNOLOGY,
+    status: ProjectStatus.ACTIVE,
+    targetFunding: 250000000,
+    currentFunding: 180000000,
+    imageUrl: 'https://images.unsplash.com/photo-1509391366360-fe5bb584850a?auto=format&fit=crop&w=800&q=80',
+    createdAt: new Date().toISOString(),
+    donorsCount: 340,
+    volunteersCount: 12,
+    requirements: [
+      { id: 's4', name: 'Electrical Engineering', totalSlots: 4, filledSlots: 2 },
+      { id: 's5', name: 'Community Outreach', totalSlots: 3, filledSlots: 3 }
+    ]
+  },
+  {
+    id: 'p10',
+    title: 'EduVR Chemistry Lab',
+    tagline: 'Laboratorium kimia virtual untuk sekolah tanpa fasilitas lab.',
+    description: 'Aplikasi VR yang memungkinkan siswa melakukan simulasi reaksi kimia berbahaya secara aman dan interaktif tanpa biaya bahan kimia.',
+    videoUrl: 'https://www.youtube.com/watch?v=zOJXz9Fp0j0',
+    innovatorId: 'u1',
+    category: ProjectCategory.EDUCATION,
+    status: ProjectStatus.ACTIVE,
+    targetFunding: 80000000,
+    currentFunding: 55000000,
+    imageUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+    createdAt: new Date().toISOString(),
+    donorsCount: 94,
+    volunteersCount: 4,
+    requirements: [
+      { id: 's24', name: 'Unity/C# Developer', totalSlots: 2, filledSlots: 1 },
+      { id: 's25', name: 'Chemistry Teacher', totalSlots: 1, filledSlots: 1 }
+    ]
+  },
+  {
+    id: 'p13',
+    title: 'TeleMed Kiosk',
+    tagline: 'Bilik konsultasi medis mandiri untuk area pasar tradisional.',
+    description: 'Kios kesehatan yang dilengkapi alat cek tensi, gula darah, dan layar telekonsultasi dengan dokter umum secara langsung.',
+    innovatorId: 'u1',
+    category: ProjectCategory.HEALTH,
+    status: ProjectStatus.ACTIVE,
+    targetFunding: 180000000,
+    currentFunding: 120000000,
+    imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
+    createdAt: new Date().toISOString(),
+    donorsCount: 77,
+    volunteersCount: 4,
+    requirements: [
+      { id: 's30', name: 'Embedded Systems', totalSlots: 1, filledSlots: 0 },
+      { id: 's31', name: 'General Practitioner', totalSlots: 5, filledSlots: 3 }
+    ]
+  },
+  {
+    id: 'p7',
+    title: 'Disability Inclusion Hub',
+    tagline: 'Pusat pelatihan kerja digital untuk penyandang disabilitas.',
+    description: 'Platform dan ruang fisik yang memfasilitasi pelatihan programming dan desain grafis khusus untuk penyandang disabilitas fisik.',
+    innovatorId: 'u1',
+    category: ProjectCategory.SOCIAL,
+    status: ProjectStatus.ACTIVE,
+    targetFunding: 60000000,
+    currentFunding: 42000000,
+    imageUrl: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=800&q=80',
+    createdAt: new Date().toISOString(),
+    donorsCount: 112,
+    volunteersCount: 6,
+    requirements: [
+      { id: 's18', name: 'UI/UX Mentor', totalSlots: 3, filledSlots: 2 },
+      { id: 's19', name: 'Soft Skill Coach', totalSlots: 2, filledSlots: 1 }
+    ]
+  }
+];

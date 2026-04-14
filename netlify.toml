@@ -1,0 +1,158 @@
+
+-- 1. ENUM TYPES (Untuk sinkronisasi dengan types.ts)
+CREATE TYPE project_category AS ENUM ('Technology', 'Social', 'Environment', 'Education', 'Health');
+CREATE TYPE project_status AS ENUM ('Pending Curated', 'Active', 'Completed', 'Rejected');
+CREATE TYPE user_role AS ENUM ('Donor', 'Innovator', 'Volunteer', 'Collaborator', 'Admin');
+CREATE TYPE verification_status AS ENUM ('Unverified', 'Pending', 'Verified');
+
+-- 2. TABLES
+-- Tabel Profil Pengguna (Sinkron dengan metadata auth.users Supabase)
+CREATE TABLE profiles (
+    id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    role user_role DEFAULT 'Donor',
+    avatar_url TEXT,
+    bio TEXT,
+    skills TEXT[], -- Array keahlian
+    is_verified BOOLEAN DEFAULT FALSE,
+    kyc_status verification_status DEFAULT 'Unverified',
+    is_restricted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Pengaturan Situs (Hanya satu baris konfigurasi global)
+CREATE TABLE site_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1), -- Menjamin hanya ada 1 baris
+    platform_name TEXT DEFAULT 'Inovasi Bersama',
+    primary_color TEXT DEFAULT '#10b981',
+    logo_url TEXT,
+    report_link TEXT,
+    impact_headline TEXT DEFAULT 'News & Impact Stories.',
+    impact_subheadline TEXT DEFAULT 'Kisah sukses dan laporan transparansi ekosistem Inovasi Bersama.',
+    global_fund_target BIGINT DEFAULT 1500000000,
+    show_donors_count BOOLEAN DEFAULT TRUE,
+    show_innovators_count BOOLEAN DEFAULT TRUE,
+    show_partners_count BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Proyek Inovasi
+CREATE TABLE projects (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    tagline TEXT,
+    description TEXT,
+    technical_details TEXT,
+    impact_metrics TEXT,
+    milestones TEXT,
+    video_url TEXT,
+    image_url TEXT,
+    innovator_id UUID REFERENCES profiles(id),
+    category project_category NOT NULL,
+    status project_status DEFAULT 'Pending Curated',
+    target_funding BIGINT DEFAULT 0,
+    current_funding BIGINT DEFAULT 0,
+    donors_count INTEGER DEFAULT 0,
+    volunteers_count INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Kebutuhan Keahlian Relawan
+CREATE TABLE project_requirements (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    skill_name TEXT NOT NULL,
+    total_slots INTEGER DEFAULT 1,
+    filled_slots INTEGER DEFAULT 0
+);
+
+-- Tabel Donasi
+CREATE TABLE donations (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id),
+    donor_id UUID REFERENCES profiles(id), -- NULL jika anonim
+    donor_name TEXT, -- Fallback untuk donasi anonim/publik
+    amount BIGINT NOT NULL,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Pencairan Dana (Disbursements)
+CREATE TABLE disbursements (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id),
+    amount BIGINT NOT NULL,
+    status TEXT DEFAULT 'Completed',
+    reference_code TEXT UNIQUE,
+    timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Aplikasi Relawan
+CREATE TABLE volunteer_applications (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    project_id UUID REFERENCES projects(id),
+    user_id UUID REFERENCES profiles(id),
+    skill_name TEXT,
+    pitch TEXT,
+    status TEXT DEFAULT 'Pending', -- Pending, Approved, Rejected
+    timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Berita & Kisah Dampak (Announcements)
+CREATE TABLE announcements (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT,
+    image_url TEXT,
+    link TEXT DEFAULT '#',
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabel Tantangan Korporat (Innovation Challenges)
+CREATE TABLE innovation_challenges (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    company_name TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    reward TEXT,
+    skills_needed TEXT[],
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. AUTOMATION (Triggers untuk sinkronisasi funding)
+-- Update current_funding di tabel projects saat donasi masuk
+CREATE OR REPLACE FUNCTION update_project_funding()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE projects 
+    SET current_funding = current_funding + NEW.amount,
+        donors_count = donors_count + 1
+    WHERE id = NEW.project_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_donation_insert
+AFTER INSERT ON donations
+FOR EACH ROW
+EXECUTE FUNCTION update_project_funding();
+
+-- 4. ROW LEVEL SECURITY (Dasar)
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Semua orang bisa melihat proyek yang aktif
+CREATE POLICY "Public projects are viewable by everyone" ON projects
+FOR SELECT USING (status = 'Active');
+
+-- Policy: Hanya admin yang bisa mengedit site_settings
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Only admins can update settings" ON site_settings
+FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'Admin')
+);
+
+-- 5. INITIAL DATA (Optional)
+INSERT INTO site_settings (id, platform_name) VALUES (1, 'Inovasi Bersama');
