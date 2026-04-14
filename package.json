@@ -1,76 +1,23 @@
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Inovasi Bersama - Gerakan Inovasi Indonesia</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: 'var(--primary-color)',
-            'primary-hover': 'var(--primary-hover)',
-          },
-          borderRadius: {
-            '3xl': '1.5rem',
-            '4xl': '2rem',
-            '5xl': '3rem',
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #10b981; 
-      --primary-hover: #059669;
-    }
-    
-    * {
-      scrollbar-width: none !important;
-      -ms-overflow-style: none !important;
-    }
-
-    *::-webkit-scrollbar {
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-    }
-
-    body { 
-      font-family: 'Plus Jakarta Sans', sans-serif; 
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-      background-color: #F8F9FD;
-    }
-
-    .glass-morphism {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    
-    .active-tap:active {
-      transform: scale(0.96);
-      opacity: 0.9;
-    }
-  </style>
-<link rel="stylesheet" href="/index.css">
-</head>
-<body class="text-slate-900">
-  <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
-</body>
-</html>
+{
+  "name": "copy-of-copy-of-copy-of-copy-of-inovasi-bersama4---crowdfunding-&-collaboration-super-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^1.39.0",
+    "@supabase/supabase-js": "^2.103.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
